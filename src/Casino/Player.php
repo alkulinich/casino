@@ -19,6 +19,9 @@ class Player
     private $chips;
     private $strategy;
 
+    private $betHistory;
+
+
     /**
      * @param $id
      */
@@ -27,6 +30,7 @@ class Player
         $this->id = $id;
         $this->cards = new ArrayObject();
         $this->chips = 0;
+        $this->betHistory = [];
     }
 
     /**
@@ -128,6 +132,32 @@ class Player
     public function getStrategy()
     {
         return $this->strategy;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBetHistory()
+    {
+        return $this->betHistory;
+    }
+
+    /**
+     * @param $type
+     * @param $num
+     * @param $amount
+     */
+    public function addBet($type, $num, $amount)
+    {
+        $this->betHistory[]['type']     = $type;
+        $this->betHistory[]['num']      = $num;
+        $this->betHistory[]['amount']   = $amount;
+        $this->betHistory[]['timeOfBet']= date('c');
+    }
+
+    public function clearBetHistory()
+    {
+        $this->betHistory = [];
     }
 
 

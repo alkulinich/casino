@@ -21,6 +21,7 @@ class Roulette extends Table
         'num' => null,
         'winners' => [],
         'losers' => [],
+        'timeOfSpin' => ''
     ];
 
     /**
@@ -103,5 +104,81 @@ class Roulette extends Table
         $this->bets = [];
         $this->result = [];
         $this->iterator->rewind();
+    }
+
+    /**
+     * Adds new Player
+     * @param Player $player
+     */
+    public function addPlayer(Player &$player)
+    {
+        $this->players->offsetSet($player->getID(), $player);
+        $this->iterator = $this->players->getIterator();
+    }
+
+    /**
+     * @param $name
+     * @return Turn
+     * @throws \Exception
+     */
+    public function PlayerTurn($name)
+    {
+        $player = $this->getPlayerById($name);
+        if (is_null($player))
+            throw new Exception("Player $name not found");
+        return new Turn($player,$this);
+    }
+
+    /**
+     * @param $name
+     * @return Player
+     */
+    public function getPlayerById($name)
+    {
+        return $this->players->offsetGet($name);
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function checkPlayerById($name)
+    {
+        return $this->players->offsetExists($name);
+    }
+
+    /**
+     * @param $num
+     * @return array
+     */
+    public function setWinNum($num)
+    {
+        $results['num'] = (string) $num;
+        $this->result['timeOfSpin'] = date('c');
+        $this->processBets($num);
+        $this->payWinners();
+        $this->payBanker();
+        $this->resetTable();
+        return $results;
+    }
+
+    /**
+     * Save history to SQL, file, mail
+     * @return array
+     */
+    public function saveHistory($clear = false)
+    {
+        // TODO: save to SQL
+        // TODO: save to file
+        // TODO: mail to archive
+        $history = $this->history;
+        if ($clear)
+            $this->history = []; // reset to save the memory
+        return $history;
+    }
+
+    public function getResultNum()
+    {
+        return $this->result['num'];
     }
 }
